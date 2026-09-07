@@ -43,6 +43,38 @@ public class GradeDAO {
         return list;
     }
 
+    public Grade getExistingGrade(int studentProfileId, int subjectId, String examType, String semester) {
+        String sql = "SELECT g.*, sub.SubjectName "
+                + "FROM Grades g "
+                + "JOIN Subjects sub ON g.SubjectId = sub.Id "
+                + "WHERE g.StudentProfileId = ? "
+                + "AND g.SubjectId = ? "
+                + "AND g.ExamType = ? "
+                + "AND g.Semester = ?";
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, studentProfileId);
+            ps.setInt(2, subjectId);
+            ps.setString(3, examType);
+            ps.setString(4, semester);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Grade g = new Grade();
+                    g.setId(rs.getInt("Id"));
+                    g.setStudentProfileId(rs.getInt("StudentProfileId"));
+                    g.setSubjectId(rs.getInt("SubjectId"));
+                    g.setExamType(rs.getString("ExamType"));
+                    g.setScore(rs.getDouble("Score"));
+                    g.setSemester(rs.getString("Semester"));
+                    g.setSubjectName(rs.getString("SubjectName"));
+                    return g;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi getExistingGrade: " + e.getMessage());
+        }
+        return null;
+    }
+
     public boolean insert(Grade g) {
         String sql = "INSERT INTO Grades (StudentProfileId, SubjectId, ExamType, Score, Semester) VALUES (?,?,?,?,?)";
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -56,6 +88,21 @@ public class GradeDAO {
             System.out.println("Lỗi insert Grade: " + e.getMessage());
             return false;
         }
+    }
+
+    public boolean saveOrUpdate(Grade g) {
+        Grade existing = getExistingGrade(
+                g.getStudentProfileId(),
+                g.getSubjectId(),
+                g.getExamType(),
+                g.getSemester());
+        // Nếu đã có điểm -> UPDATE
+        if (existing != null) {
+            g.setId(existing.getId());
+            return update(g);
+        }
+        // Nếu chưa có -> INSERT
+        return insert(g);
     }
 
     public boolean update(Grade g) {

@@ -7,9 +7,9 @@ package view;
 import dao.UserDAO;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import model.User;
+import util.Session;
 
 /**
  *
@@ -26,6 +26,7 @@ public class LoginFrm extends javax.swing.JFrame {
      */
     public LoginFrm() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -57,8 +58,10 @@ public class LoginFrm extends javax.swing.JFrame {
         lblPassword.setText("Password:");
 
         btnLogin.setText("Login");
+        btnLogin.addActionListener(this::btnLoginActionPerformed);
 
         btnExit.setText("Exit");
+        btnExit.addActionListener(this::btnExitActionPerformed);
 
         lblMessage.setText("JLabel");
 
@@ -109,23 +112,26 @@ public class LoginFrm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnLogin)
                     .addComponent(btnExit))
-                .addContainerGap(118, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        // TODO add your handling code here:
         String username = txtUsername.getText().trim();
         String password = txtPassword.getText().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
+            lblMessage.setForeground(new java.awt.Color(255, 0, 0));
             lblMessage.setText("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!");
             return;
         }
 
         User user = userDAO.login(username, password);
         if (user == null) {
+            lblMessage.setForeground(new java.awt.Color(255, 0, 0));
             lblMessage.setText("Sai tên đăng nhập hoặc mật khẩu!");
             return;
         }
@@ -134,25 +140,16 @@ public class LoginFrm extends javax.swing.JFrame {
         lblMessage.setText("Đăng nhập thành công!");
 
         javax.swing.JOptionPane.showMessageDialog(this, "Xin chào " + user.getFullName());
-
-        // Điều hướng theo RoleId: 1=Admin, 2=Teacher, 3=Student, 4=Parent
+        util.Session.setCurrentUser(user);
+        // Mở Menu chính - từ đây điều hướng tới đúng chức năng theo vai trò
         this.dispose();
-        switch (user.getRoleId()) {
-            case 1 ->
-                new StudentManagementFrm().setVisible(true); // Admin -> mở form quản lý (demo)
-            case 2 ->
-                new StudentManagementFrm().setVisible(true); // Teacher -> tuỳ bạn đổi thành TeacherHomeFrm
-            default ->
-                javax.swing.JOptionPane.showMessageDialog(null, "Chưa cấu hình giao diện cho role này.");
-        }
-    }
+        new MainMenuFrm(user).setVisible(true);
+    }//GEN-LAST:event_btnLoginActionPerformed
 
-    /**
-     * Xử lý khi bấm nút "Exit" - thoát chương trình.
-     */
-    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+        // TODO add your handling code here:
         System.exit(0);
-    }
+    }//GEN-LAST:event_btnExitActionPerformed
 
     /**
      * @param args the command line arguments

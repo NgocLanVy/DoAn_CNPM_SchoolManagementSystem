@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class UserDAO {
 
+    // Đăng nhập: kiểm tra username + password, trả về User nếu đúng, null nếu sai
     public User login(String username, String password) {
         String sql = "SELECT * FROM Users WHERE Username = ? AND PasswordHash = ? AND IsActive = 1";
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -108,5 +109,49 @@ public class UserDAO {
         u.setActive(rs.getBoolean("IsActive"));
         u.setRoleId(rs.getInt("RoleId"));
         return u;
+    }
+
+    public boolean updateProfile(User user) {
+
+        String sql = "UPDATE Users "
+                + "SET FullName = ?, "
+                + "Address = ?, "
+                + "Gender = ?, "
+                + "Email = ?, "
+                + "Phone = ? "
+                + "WHERE Id = ?";
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getAddress());
+            ps.setString(3, user.getGender());
+            ps.setString(4, user.getEmail());
+            ps.setString(5, user.getPhone());
+            ps.setInt(6, user.getId());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Lỗi update profile: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updatePassword(int userId, String newPassword) {
+
+        String sql = "UPDATE Users SET PasswordHash = ? WHERE Id = ?";
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, newPassword);
+            ps.setInt(2, userId);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Lỗi đổi mật khẩu: " + e.getMessage());
+            return false;
+        }
     }
 }

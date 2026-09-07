@@ -4,19 +4,47 @@
  */
 package view;
 
+import dao.SchoolClassDAO;
+import dao.StudentDAO;
+import model.SchoolClass;
+import model.StudentProfile;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import java.util.ArrayList;
+import model.User;
+import util.Session;
+
 /**
  *
  * @author Lenovo
  */
 public class StudentManagementFrm extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(StudentManagementFrm.class.getName());
+    private final StudentDAO studentDAO = new StudentDAO();
+    private final SchoolClassDAO classDAO = new SchoolClassDAO();
+
+    private DefaultTableModel tableModel;
+    private List<StudentProfile> currentList = new ArrayList<>();
+
+    private int selectedProfileId = -1;
+    private int selectedUserId = -1;
+
+    private final User currentUser;
 
     /**
      * Creates new form StudentManagementFrm
      */
-    public StudentManagementFrm() {
+    public StudentManagementFrm(User currentUser) {
+        this.currentUser = currentUser;
+
         initComponents();
+        setLocationRelativeTo(null);
+        customizeUI();
+        loadClassCombo();
+        loadTable(studentDAO.getAll());
     }
 
     /**
@@ -28,21 +56,327 @@ public class StudentManagementFrm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        lblTitle = new javax.swing.JLabel();
+        lblSearch = new javax.swing.JLabel();
+        txtSearch = new javax.swing.JTextField();
+        btnSearch = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblStudents = new javax.swing.JTable();
+        lblFullName = new javax.swing.JLabel();
+        txtFullName = new javax.swing.JTextField();
+        lblUsername = new javax.swing.JLabel();
+        txtUsername = new javax.swing.JTextField();
+        lblPassword = new javax.swing.JLabel();
+        txtPassword = new javax.swing.JTextField();
+        lblGender = new javax.swing.JLabel();
+        cboGender = new javax.swing.JComboBox<>();
+        lblStudentCode = new javax.swing.JLabel();
+        txtStudentCode = new javax.swing.JTextField();
+        lblClass = new javax.swing.JLabel();
+        cboClass = new javax.swing.JComboBox<>();
+        btnAdd = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        lblTitle.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblTitle.setText("QUẢN LÝ HỌC SINH");
+
+        lblSearch.setText("Tìm kiếm:");
+
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(this::btnSearchActionPerformed);
+
+        tblStudents.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblStudents);
+
+        lblFullName.setText("Họ tên:");
+
+        lblUsername.setText("Tên đăng nhập:");
+
+        lblPassword.setText("Mật khẩu:");
+
+        lblGender.setText("Giới tính:");
+
+        cboGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        lblStudentCode.setText("Mã học sinh:");
+
+        lblClass.setText("Lớp:");
+
+        cboClass.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        btnAdd.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnAdd.setText("Add");
+        btnAdd.addActionListener(this::btnAddActionPerformed);
+
+        btnUpdate.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnUpdate.setText("Update");
+        btnUpdate.addActionListener(this::btnUpdateActionPerformed);
+
+        btnDelete.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnDelete.setText("Delete");
+        btnDelete.addActionListener(this::btnDeleteActionPerformed);
+
+        btnClear.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnClear.setText("Clear");
+        btnClear.addActionListener(this::btnClearActionPerformed);
+
+        btnBack.setText("Quay lại");
+        btnBack.addActionListener(this::btnBackActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnBack)
+                        .addGap(99, 99, 99)
+                        .addComponent(lblTitle))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(lblSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(lblUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
+                                .addComponent(lblGender, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblStudentCode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btnAdd)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                                    .addComponent(btnUpdate))
+                                .addComponent(txtUsername, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(cboGender, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtStudentCode, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addGap(18, 18, 18)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(lblPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+                                        .addComponent(lblFullName, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(lblClass, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(txtPassword)
+                                        .addComponent(txtFullName)
+                                        .addComponent(cboClass, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btnDelete)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnClear)
+                                    .addGap(0, 0, Short.MAX_VALUE))))))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTitle)
+                    .addComponent(btnBack))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSearch)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearch))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFullName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFullName)
+                    .addComponent(lblStudentCode)
+                    .addComponent(txtStudentCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblUsername)
+                    .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblPassword)
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblGender)
+                    .addComponent(cboGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblClass)
+                    .addComponent(cboClass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAdd)
+                    .addComponent(btnUpdate)
+                    .addComponent(btnDelete)
+                    .addComponent(btnClear))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    private void customizeUI() {
+        tableModel = new DefaultTableModel(
+                new Object[]{"ID", "Mã HS", "Họ tên", "Giới tính", "Lớp"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblStudents.setModel(tableModel);
+        tblStudents.getSelectionModel().addListSelectionListener(e -> onRowSelected());
+
+        cboGender.removeAllItems();
+        cboGender.addItem("Nam");
+        cboGender.addItem("Nữ");
+    }
+
+    private void loadClassCombo() {
+        cboClass.removeAllItems();
+        List<SchoolClass> classes = classDAO.getAll();
+        for (SchoolClass c : classes) {
+            ((JComboBox) cboClass).addItem(c);
+        }
+    }
+
+    private void loadTable(List<StudentProfile> list) {
+        currentList = list;
+        tableModel.setRowCount(0);
+        for (StudentProfile sp : list) {
+            tableModel.addRow(new Object[]{
+                sp.getId(), sp.getStudentCode(), sp.getFullName(), sp.getGender(), sp.getClassName()
+            });
+        }
+    }
+
+    private void onRowSelected() {
+        int row = tblStudents.getSelectedRow();
+        if (row < 0 || row >= currentList.size()) {
+            return;
+        }
+        StudentProfile sp = currentList.get(row);
+        selectedProfileId = sp.getId();
+        selectedUserId = sp.getUserId();
+        txtStudentCode.setText(sp.getStudentCode());
+        txtFullName.setText(sp.getFullName());
+        cboGender.setSelectedItem(sp.getGender());
+
+        Integer classId = sp.getSchoolClassId();
+        for (int i = 0; i < cboClass.getItemCount(); i++) {
+            SchoolClass c = (SchoolClass) ((JComboBox) cboClass).getItemAt(i);
+            if (classId != null && c.getId() == classId) {
+                cboClass.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        // TODO add your handling code here:
+        String fullName = txtFullName.getText().trim();
+        String username = txtUsername.getText().trim();
+        String password = txtPassword.getText().trim();
+        String gender = (String) cboGender.getSelectedItem();
+        String studentCode = txtStudentCode.getText().trim();
+        SchoolClass selectedClass = (SchoolClass) cboClass.getSelectedItem();
+
+        if (fullName.isEmpty() || username.isEmpty() || password.isEmpty() || studentCode.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+            return;
+        }
+
+        Integer classId = selectedClass != null ? selectedClass.getId() : null;
+        boolean ok = studentDAO.insert(username, password, fullName, gender, studentCode, classId);
+        if (ok) {
+            JOptionPane.showMessageDialog(this, "Thêm học sinh thành công!");
+            loadTable(studentDAO.getAll());
+            btnClearActionPerformed(null);
+        } else {
+            JOptionPane.showMessageDialog(this, "Thêm học sinh thất bại! (Username có thể đã tồn tại)");
+        }
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        // TODO add your handling code here:
+        if (selectedProfileId < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn học sinh trong bảng để cập nhật!");
+            return;
+        }
+        StudentProfile sp = new StudentProfile();
+        sp.setId(selectedProfileId);
+        sp.setStudentCode(txtStudentCode.getText().trim());
+        SchoolClass selectedClass = (SchoolClass) cboClass.getSelectedItem();
+        sp.setSchoolClassId(selectedClass != null ? selectedClass.getId() : null);
+
+        boolean ok = studentDAO.update(sp);
+        if (ok) {
+            JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+            loadTable(studentDAO.getAll());
+        } else {
+            JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+        }
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        if (selectedProfileId < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn học sinh trong bảng để xóa!");
+            return;
+        }
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa học sinh này?",
+                "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean ok = studentDAO.delete(selectedProfileId, selectedUserId);
+            if (ok) {
+                loadTable(studentDAO.getAll());
+                btnClearActionPerformed(null);
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa thất bại!");
+            }
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        // TODO add your handling code here:
+        selectedProfileId = -1;
+        selectedUserId = -1;
+        txtFullName.setText("");
+        txtUsername.setText("");
+        txtPassword.setText("");
+        txtStudentCode.setText("");
+        cboGender.setSelectedIndex(0);
+        tblStudents.clearSelection();
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        String keyword = txtSearch.getText().trim();
+        loadTable(keyword.isEmpty() ? studentDAO.getAll() : studentDAO.search(keyword));
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        new MainMenuFrm(currentUser).setVisible(true);
+    }//GEN-LAST:event_btnBackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -66,9 +400,31 @@ public class StudentManagementFrm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new StudentManagementFrm().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JButton btnUpdate;
+    private javax.swing.JComboBox<String> cboClass;
+    private javax.swing.JComboBox<String> cboGender;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblClass;
+    private javax.swing.JLabel lblFullName;
+    private javax.swing.JLabel lblGender;
+    private javax.swing.JLabel lblPassword;
+    private javax.swing.JLabel lblSearch;
+    private javax.swing.JLabel lblStudentCode;
+    private javax.swing.JLabel lblTitle;
+    private javax.swing.JLabel lblUsername;
+    private javax.swing.JTable tblStudents;
+    private javax.swing.JTextField txtFullName;
+    private javax.swing.JTextField txtPassword;
+    private javax.swing.JTextField txtSearch;
+    private javax.swing.JTextField txtStudentCode;
+    private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 }

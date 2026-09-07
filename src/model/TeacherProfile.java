@@ -70,4 +70,9 @@ public class TeacherProfile {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+
+    @Override
+    public String toString() {
+        return getFullName();
+    }
 }

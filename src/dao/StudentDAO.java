@@ -16,7 +16,38 @@ import java.util.List;
  * @author Lenovo
  */
 public class StudentDAO {
+// Lấy hồ sơ học sinh theo UserId (dùng khi Student đăng nhập, cần biết mình học lớp nào)
 
+    public StudentProfile getByUserId(int userId) {
+        String sql = "SELECT sp.Id, sp.UserId, sp.StudentCode, sp.SchoolClassId, "
+                + "       u.FullName, u.Gender, sc.ClassName "
+                + "FROM StudentProfiles sp "
+                + "JOIN Users u ON sp.UserId = u.Id "
+                + "LEFT JOIN SchoolClasses sc ON sp.SchoolClassId = sc.Id "
+                + "WHERE sp.UserId = ?";
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    StudentProfile sp = new StudentProfile();
+                    sp.setId(rs.getInt("Id"));
+                    sp.setUserId(rs.getInt("UserId"));
+                    sp.setStudentCode(rs.getString("StudentCode"));
+                    int classId = rs.getInt("SchoolClassId");
+                    sp.setSchoolClassId(rs.wasNull() ? null : classId);
+                    sp.setFullName(rs.getString("FullName"));
+                    sp.setGender(rs.getString("Gender"));
+                    sp.setClassName(rs.getString("ClassName"));
+                    return sp;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi getByUserId Student: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // Lấy danh sách học sinh kèm tên (join Users) và tên lớp (join SchoolClasses) để đổ lên JTable
     public List<StudentProfile> getAll() {
         List<StudentProfile> list = new ArrayList<>();
         String sql = "SELECT sp.Id, sp.UserId, sp.StudentCode, sp.SchoolClassId, "
@@ -40,6 +71,35 @@ public class StudentDAO {
             }
         } catch (SQLException e) {
             System.out.println("Lỗi getAll Student: " + e.getMessage());
+        }
+        return list;
+    }
+
+    // Lấy danh sách học sinh theo lớp (dùng cho form Nhập điểm, Điểm danh)
+    public List<StudentProfile> getByClass(int schoolClassId) {
+        List<StudentProfile> list = new ArrayList<>();
+        String sql = "SELECT sp.Id, sp.UserId, sp.StudentCode, sp.SchoolClassId, "
+                + "       u.FullName, u.Gender, sc.ClassName "
+                + "FROM StudentProfiles sp "
+                + "JOIN Users u ON sp.UserId = u.Id "
+                + "LEFT JOIN SchoolClasses sc ON sp.SchoolClassId = sc.Id "
+                + "WHERE sp.SchoolClassId = ? ORDER BY u.FullName";
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, schoolClassId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    StudentProfile sp = new StudentProfile();
+                    sp.setId(rs.getInt("Id"));
+                    sp.setUserId(rs.getInt("UserId"));
+                    sp.setStudentCode(rs.getString("StudentCode"));
+                    sp.setFullName(rs.getString("FullName"));
+                    sp.setGender(rs.getString("Gender"));
+                    sp.setClassName(rs.getString("ClassName"));
+                    list.add(sp);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi getByClass Student: " + e.getMessage());
         }
         return list;
     }
