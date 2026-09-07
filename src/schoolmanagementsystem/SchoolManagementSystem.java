@@ -4,6 +4,9 @@
  */
 package schoolmanagementsystem;
 
+import javax.swing.SwingUtilities;
+import view.LoginFrm;
+
 /**
  *
  * @author Lenovo
@@ -15,6 +18,9 @@ public class SchoolManagementSystem {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        SwingUtilities.invokeLater(() -> {
+            new LoginFrm().setVisible(true);
+        });
     }
-    
+
 }

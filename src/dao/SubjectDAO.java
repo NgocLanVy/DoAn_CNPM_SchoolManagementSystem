@@ -20,7 +20,9 @@ public class SubjectDAO {
     public List<Subject> getAll() {
         List<Subject> list = new ArrayList<>();
         String sql = "SELECT * FROM Subjects ORDER BY Id";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Subject s = new Subject();
                 s.setId(rs.getInt("Id"));
@@ -37,7 +39,8 @@ public class SubjectDAO {
 
     public boolean insert(Subject s) {
         String sql = "INSERT INTO Subjects (SubjectName, SubjectCode, Description) VALUES (?,?,?)";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, s.getSubjectName());
             ps.setString(2, s.getSubjectCode());
             ps.setString(3, s.getDescription());
@@ -50,7 +53,8 @@ public class SubjectDAO {
 
     public boolean update(Subject s) {
         String sql = "UPDATE Subjects SET SubjectName=?, SubjectCode=?, Description=? WHERE Id=?";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, s.getSubjectName());
             ps.setString(2, s.getSubjectCode());
             ps.setString(3, s.getDescription());
@@ -64,7 +68,8 @@ public class SubjectDAO {
 
     public boolean delete(int id) {
         String sql = "DELETE FROM Subjects WHERE Id=?";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -73,3 +78,4 @@ public class SubjectDAO {
         }
     }
 }
+

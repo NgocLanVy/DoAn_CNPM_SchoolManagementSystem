@@ -20,12 +20,14 @@ public class SchoolClassDAO {
     public List<SchoolClass> getAll() {
         List<SchoolClass> list = new ArrayList<>();
         String sql = "SELECT sc.Id, sc.ClassName, sc.GradeLevel, sc.SchoolYear, sc.HomeroomTeacherId, "
-                + "       u.FullName AS TeacherName "
-                + "FROM SchoolClasses sc "
-                + "LEFT JOIN TeacherProfiles tp ON sc.HomeroomTeacherId = tp.Id "
-                + "LEFT JOIN Users u ON tp.UserId = u.Id "
-                + "ORDER BY sc.Id";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+                   + "       u.FullName AS TeacherName "
+                   + "FROM SchoolClasses sc "
+                   + "LEFT JOIN TeacherProfiles tp ON sc.HomeroomTeacherId = tp.Id "
+                   + "LEFT JOIN Users u ON tp.UserId = u.Id "
+                   + "ORDER BY sc.Id";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 SchoolClass c = new SchoolClass();
                 c.setId(rs.getInt("Id"));
@@ -45,15 +47,12 @@ public class SchoolClassDAO {
 
     public boolean insert(SchoolClass c) {
         String sql = "INSERT INTO SchoolClasses (ClassName, GradeLevel, SchoolYear, HomeroomTeacherId) VALUES (?,?,?,?)";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, c.getClassName());
             ps.setInt(2, c.getGradeLevel());
             ps.setString(3, c.getSchoolYear());
-            if (c.getHomeroomTeacherId() != null) {
-                ps.setInt(4, c.getHomeroomTeacherId());
-            } else {
-                ps.setNull(4, Types.INTEGER);
-            }
+            if (c.getHomeroomTeacherId() != null) ps.setInt(4, c.getHomeroomTeacherId()); else ps.setNull(4, Types.INTEGER);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Lỗi insert SchoolClass: " + e.getMessage());
@@ -63,15 +62,12 @@ public class SchoolClassDAO {
 
     public boolean update(SchoolClass c) {
         String sql = "UPDATE SchoolClasses SET ClassName=?, GradeLevel=?, SchoolYear=?, HomeroomTeacherId=? WHERE Id=?";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, c.getClassName());
             ps.setInt(2, c.getGradeLevel());
             ps.setString(3, c.getSchoolYear());
-            if (c.getHomeroomTeacherId() != null) {
-                ps.setInt(4, c.getHomeroomTeacherId());
-            } else {
-                ps.setNull(4, Types.INTEGER);
-            }
+            if (c.getHomeroomTeacherId() != null) ps.setInt(4, c.getHomeroomTeacherId()); else ps.setNull(4, Types.INTEGER);
             ps.setInt(5, c.getId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -82,7 +78,8 @@ public class SchoolClassDAO {
 
     public boolean delete(int id) {
         String sql = "DELETE FROM SchoolClasses WHERE Id=?";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
