@@ -4,9 +4,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/CongNghePhanMem/DoAn_SchoolManagementSystem/SchoolManagementSystem/src/view/MainMenuFrm.java</file>
-            <file>file:/D:/CongNghePhanMem/DoAn_SchoolManagementSystem/SchoolManagementSystem/src/view/NotificationFrm.java</file>
-            <file>file:/D:/CongNghePhanMem/DoAn_SchoolManagementSystem/SchoolManagementSystem/src/view/TeachingAssignmentFrm.java</file>
-            <file>file:/D:/CongNghePhanMem/DoAn_SchoolManagementSystem/SchoolManagementSystem/src/view/ScheduleFrm.java</file>
+            <file>file:/D:/CongNghePhanMem/DoAn_SchoolManagementSystem/SchoolManagementSystem/src/view/ViewNotificationFrm.java</file>
+            <file>file:/D:/CongNghePhanMem/DoAn_SchoolManagementSystem/SchoolManagementSystem/src/view/MyClassFrm.java</file>
+            <file>file:/D:/CongNghePhanMem/DoAn_SchoolManagementSystem/SchoolManagementSystem/src/model/TeachingAssignment.java</file>
         </group>
     </open-files>
 </project-private>

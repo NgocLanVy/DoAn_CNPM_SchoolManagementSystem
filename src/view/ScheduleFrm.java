@@ -6,6 +6,7 @@ package view;
 
 import dao.ScheduleDAO;
 import dao.SchoolClassDAO;
+import dao.StudentDAO;
 import dao.SubjectDAO;
 import dao.TeacherDAO;
 
@@ -32,7 +33,7 @@ public class ScheduleFrm extends javax.swing.JFrame {
     private final SchoolClassDAO classDAO = new SchoolClassDAO();
     private final SubjectDAO subjectDAO = new SubjectDAO();
     private final TeacherDAO teacherDAO = new TeacherDAO();
-
+    private final StudentDAO studentDAO = new StudentDAO();
     private final User currentUser;
 
     private DefaultTableModel tableModel;
@@ -49,6 +50,11 @@ public class ScheduleFrm extends javax.swing.JFrame {
         loadSubjectCombo();
         loadTeacherCombo();
         loadDayCombo();
+
+        if (currentUser.getRoleId() == 4) {
+            loadChildren();
+        }
+
         loadTable();
         registerEvents();
         setupRole();
@@ -85,6 +91,8 @@ public class ScheduleFrm extends javax.swing.JFrame {
         btnUpdate = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
+        lblChild = new javax.swing.JLabel();
+        cboChild = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -130,6 +138,8 @@ public class ScheduleFrm extends javax.swing.JFrame {
 
         btnClear.setText("Clear");
 
+        lblChild.setText("Xem của con:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -165,6 +175,11 @@ public class ScheduleFrm extends javax.swing.JFrame {
                                             .addComponent(txtRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
+                                        .addGap(32, 32, 32)
+                                        .addComponent(btnDelete)
+                                        .addGap(35, 35, 35)
+                                        .addComponent(btnClear))
+                                    .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGap(13, 13, 13)
@@ -173,17 +188,16 @@ public class ScheduleFrm extends javax.swing.JFrame {
                                                     .addComponent(lblEndTime)))
                                             .addGroup(layout.createSequentialGroup()
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(lblDay, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(lblDay, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(lblChild, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addComponent(txtEndTime)
                                             .addComponent(cboDay, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(cboSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(32, 32, 32)
-                                        .addComponent(btnDelete)
-                                        .addGap(35, 35, 35)
-                                        .addComponent(btnClear)))))
+                                            .addComponent(cboSubject, 0, 170, Short.MAX_VALUE)
+                                            .addComponent(cboChild, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
                         .addContainerGap(34, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -215,7 +229,9 @@ public class ScheduleFrm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblRoom)
-                            .addComponent(txtRoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtRoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblChild)
+                            .addComponent(cboChild, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(cboSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -285,6 +301,9 @@ public class ScheduleFrm extends javax.swing.JFrame {
                 onRowSelected();
             }
         });
+        if (currentUser.getRoleId() == 4) {
+            cboChild.addActionListener(e -> loadTable());
+        }
     }
 
     private void addSchedule() {
@@ -408,8 +427,8 @@ public class ScheduleFrm extends javax.swing.JFrame {
             txtEndTime.setEnabled(true);
             txtRoom.setEnabled(true);
 
-        } // Role 2 = Giáo viên
-        else if (currentUser.getRoleId() == 2) {
+        } // Role 2 = Giáo viên, Role 3 = Học sinh, Role 4 = Phụ huynh -> đều chỉ xem, khóa hết
+        else {
 
             btnAdd.setEnabled(false);
             btnUpdate.setEnabled(false);
@@ -734,39 +753,52 @@ public class ScheduleFrm extends javax.swing.JFrame {
 
     private void loadTable() {
         tableModel.setRowCount(0);
-        // ADMIN
-        if (currentUser.getRoleId() == 1) {
-            List<Object[]> list = scheduleDAO.getAll();
-            for (Object[] row : list) {
-                int day = Integer.parseInt(row[4].toString());
-                tableModel.addRow(new Object[]{
-                    row[0],
-                    row[1],
-                    row[2],
-                    row[3],
-                    ScheduleDAO.dayName(day),
-                    row[5],
-                    row[6],
-                    row[7]
-                });
-            }
+        int roleId = currentUser.getRoleId();
 
-        } // GIÁO VIÊN
-        else if (currentUser.getRoleId() == 2) {
+        if (roleId == 1) {
+            // ADMIN: xem toàn bộ thời khóa biểu trường
+            List<Object[]> list = scheduleDAO.getAll();
+            addRowsToTable(list);
+
+        } else if (roleId == 2) {
+            // GIÁO VIÊN: xem lịch DẠY của chính mình
             List<Object[]> list = scheduleDAO.getByTeacherUserId(currentUser.getId());
             for (Object[] row : list) {
                 int day = Integer.parseInt(row[1].toString());
                 tableModel.addRow(new Object[]{
-                    row[0], // ID
-                    row[3], // Lớp
-                    row[2], // Môn học
-                    currentUser.getFullName(), // Giáo viên
-                    ScheduleDAO.dayName(day), // Thứ
-                    row[4], // Bắt đầu
-                    row[5], // Kết thúc
-                    row[6] // Phòng
+                    row[0], row[3], row[2], currentUser.getFullName(),
+                    ScheduleDAO.dayName(day), row[4], row[5], row[6]
                 });
             }
+
+        } else if (roleId == 3) {
+            // HỌC SINH: xem lịch HỌC của lớp mình
+            model.StudentProfile sp = studentDAO.getByUserId(currentUser.getId());
+            if (sp == null || sp.getSchoolClassId() == null) {
+                JOptionPane.showMessageDialog(this, "Bạn chưa được xếp lớp!");
+                return;
+            }
+            addRowsToTable(scheduleDAO.getByClassId(sp.getSchoolClassId()));
+
+        } else if (roleId == 4) {
+            // PHỤ HUYNH: xem lịch HỌC của con đang chọn trong cboChild
+            model.StudentProfile child = (model.StudentProfile) cboChild.getSelectedItem();
+            if (child == null || child.getSchoolClassId() == null) {
+                return;
+            }
+            addRowsToTable(scheduleDAO.getByClassId(child.getSchoolClassId()));
+        }
+    }
+
+    // Dùng chung cho Admin/Student/Parent vì cả 3 đều nhận đúng thứ tự cột
+    // {Id, ClassName, SubjectName, TeacherName, DayOfWeek, StartTime, EndTime, Room}
+    private void addRowsToTable(List<Object[]> list) {
+        for (Object[] row : list) {
+            int day = Integer.parseInt(row[4].toString());
+            tableModel.addRow(new Object[]{
+                row[0], row[1], row[2], row[3],
+                ScheduleDAO.dayName(day), row[5], row[6], row[7]
+            });
         }
     }
 
@@ -776,6 +808,26 @@ public class ScheduleFrm extends javax.swing.JFrame {
 
         for (String day : ScheduleDAO.DAY_NAMES) {
             cboDay.addItem(day);
+        }
+    }
+
+    private void loadChildren() {
+
+        cboChild.removeAllItems();
+
+        if (currentUser.getRoleId() != 4) {
+            return;
+        }
+
+        List<model.StudentProfile> children
+                = studentDAO.getChildrenByParentUserId(currentUser.getId());
+
+        for (model.StudentProfile child : children) {
+            cboChild.addItem(child);
+        }
+
+        if (cboChild.getItemCount() > 0) {
+            cboChild.setSelectedIndex(0);
         }
     }
 
@@ -809,11 +861,13 @@ public class ScheduleFrm extends javax.swing.JFrame {
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnUpdate;
+    private javax.swing.JComboBox<model.StudentProfile> cboChild;
     private javax.swing.JComboBox<SchoolClass> cboClass;
     private javax.swing.JComboBox<String> cboDay;
     private javax.swing.JComboBox<Subject> cboSubject;
     private javax.swing.JComboBox<TeacherProfile> cboTeacher;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblChild;
     private javax.swing.JLabel lblClass;
     private javax.swing.JLabel lblDay;
     private javax.swing.JLabel lblEndTime;

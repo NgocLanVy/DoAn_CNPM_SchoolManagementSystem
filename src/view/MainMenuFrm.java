@@ -186,9 +186,13 @@ public class MainMenuFrm extends javax.swing.JFrame {
 
             int roleId = currentUser.getRoleId();
 
-            if (roleId == 1 || roleId == 2) {
+            if (roleId == 1) {
                 this.dispose();
                 new ClassManagementFrm(currentUser).setVisible(true);
+
+            } else if (roleId == 2) {
+                this.dispose();
+                new MyClassFrm(currentUser).setVisible(true);
             }
         });
 
@@ -284,9 +288,13 @@ public class MainMenuFrm extends javax.swing.JFrame {
 
         //THÔNG BÁO
         btnNotification.addActionListener(e -> {
-
             this.dispose();
-            new NotificationFrm(currentUser).setVisible(true);
+            int roleId = currentUser.getRoleId();
+            if (roleId == 1 || roleId == 2) {
+                new NotificationFrm(currentUser).setVisible(true);      // Admin/Teacher: soạn + gửi
+            } else {
+                new ViewNotificationFrm(currentUser).setVisible(true);  // Student/Parent: chỉ xem
+            }
         });
 
         //HỒ SƠ

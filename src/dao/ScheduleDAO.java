@@ -215,7 +215,36 @@ public class ScheduleDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Lỗi getByTeacherUserId Schedule: "+ e.getMessage());
+            System.out.println("Lỗi getByTeacherUserId Schedule: " + e.getMessage());
+        }
+        return list;
+    }
+    // Thời khóa biểu của 1 lớp cụ thể - dùng cho Học sinh xem lớp mình, Phụ huynh xem lớp của con
+
+    public List<Object[]> getByClassId(int schoolClassId) {
+        List<Object[]> list = new ArrayList<>();
+        String sql = "SELECT sc.Id, cl.ClassName, sub.SubjectName, u.FullName AS TeacherName, "
+                + "       sc.DayOfWeek, sc.StartTime, sc.EndTime, sc.Room "
+                + "FROM Schedules sc "
+                + "JOIN SchoolClasses cl ON sc.SchoolClassId = cl.Id "
+                + "JOIN Subjects sub ON sc.SubjectId = sub.Id "
+                + "LEFT JOIN TeacherProfiles tp ON sc.TeacherId = tp.Id "
+                + "LEFT JOIN Users u ON tp.UserId = u.Id "
+                + "WHERE sc.SchoolClassId = ? "
+                + "ORDER BY sc.DayOfWeek, sc.StartTime";
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, schoolClassId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Object[]{
+                        rs.getInt("Id"), rs.getString("ClassName"), rs.getString("SubjectName"),
+                        rs.getString("TeacherName"), rs.getInt("DayOfWeek"),
+                        rs.getTime("StartTime"), rs.getTime("EndTime"), rs.getString("Room")
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi getByClassId Schedule: " + e.getMessage());
         }
         return list;
     }

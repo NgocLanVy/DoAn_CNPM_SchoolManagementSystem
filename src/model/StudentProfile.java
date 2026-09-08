@@ -77,4 +77,9 @@ public class StudentProfile {
     public void setGender(String gender) {
         this.gender = gender;
     }
+
+    @Override
+    public String toString() {
+        return studentCode + " - " + fullName;
+    }
 }
