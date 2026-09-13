@@ -2,51 +2,51 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package view;
+package view.admin;
 
-import dao.GradeDAO;
+import view.common.MainMenuFrm;
+import dao.AttendanceDAO;
 import dao.SchoolClassDAO;
-import dao.StudentDAO;
 import dao.SubjectDAO;
-import model.Grade;
+import dao.TeachingAssignmentDAO;
 import model.SchoolClass;
-import model.StudentProfile;
 import model.Subject;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import dao.TeachingAssignmentDAO;
 import model.TeachingAssignment;
 
 /**
  *
  * @author Lenovo
  */
-public class GradeEntryFrm extends javax.swing.JFrame {
+public class AttendanceFrm extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GradeEntryFrm.class.getName());
-    private final SchoolClassDAO classDAO = new SchoolClassDAO();
-    private final SubjectDAO subjectDAO = new SubjectDAO();
-    private final StudentDAO studentDAO = new StudentDAO();
-    private final GradeDAO gradeDAO = new GradeDAO();
-    private final TeachingAssignmentDAO teachingAssignmentDAO = new TeachingAssignmentDAO();
-    private List<TeachingAssignment> teacherAssignments;
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AttendanceFrm.class.getName());
     private DefaultTableModel tableModel;
 
-    // Map dòng bảng -> StudentProfileId để lưu điểm đúng học sinh
+    private final SchoolClassDAO classDAO = new SchoolClassDAO();
+    private final SubjectDAO subjectDAO = new SubjectDAO();
+    private final AttendanceDAO attendanceDAO = new AttendanceDAO();
+    private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
     private final Map<Integer, Integer> rowToStudentId = new HashMap<>();
+    private static final String[] STATUS_OPTIONS = {"Present", "Absent", "Late", "ExcusedAbsence"};
+
     private final model.User currentUser;
+    private final TeachingAssignmentDAO teachingAssignmentDAO = new TeachingAssignmentDAO();
+    private List<TeachingAssignment> teacherAssignments;
 
     /**
-     * Creates new form GradeEntryFrm
+     * Creates new form AttendanceFrm
      */
-    public GradeEntryFrm(model.User currentUser) {
+    public AttendanceFrm(model.User currentUser) {
         this.currentUser = currentUser;
         initComponents();
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -69,45 +69,41 @@ public class GradeEntryFrm extends javax.swing.JFrame {
         cboClass = new javax.swing.JComboBox<>();
         lblSubject = new javax.swing.JLabel();
         cboSubject = new javax.swing.JComboBox<>();
-        lblExamType = new javax.swing.JLabel();
-        cboExamType = new javax.swing.JComboBox<>();
-        lblSemester = new javax.swing.JLabel();
-        txtSemester = new javax.swing.JTextField();
+        lblDate = new javax.swing.JLabel();
+        txtDate = new javax.swing.JTextField();
         btnLoad = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblGrades = new javax.swing.JTable();
+        tblAttendance = new javax.swing.JTable();
         btnSave = new javax.swing.JButton();
         btnBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         lblTitle.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblTitle.setText("NHẬP ĐIỂM");
+        lblTitle.setText("ĐIỂM DANH");
 
         lblClass.setText("Lớp:");
 
         lblSubject.setText("Môn học:");
 
-        lblExamType.setText("Loại điểm:");
-
-        lblSemester.setText("Học kỳ:");
+        lblDate.setText("Ngày (dd/MM/yyyy):");
 
         btnLoad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnLoad.setText("Tải danh sách");
         btnLoad.addActionListener(this::btnLoadActionPerformed);
 
-        tblGrades.setModel(new javax.swing.table.DefaultTableModel(
+        tblAttendance.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Mã HS", "Họ tên", "Điểm"
+                "Mã HS", "Họ tên", "Trạng thái", "Ghi chú"
             }
         ));
-        jScrollPane1.setViewportView(tblGrades);
+        jScrollPane1.setViewportView(tblAttendance);
 
         btnSave.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnSave.setText("Lưu điểm");
+        btnSave.setText("Lưu điểm danh");
         btnSave.addActionListener(this::btnSaveActionPerformed);
 
         btnBack.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -122,46 +118,40 @@ public class GradeEntryFrm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                            .addGap(228, 228, 228)
+                            .addGap(253, 253, 253)
                             .addComponent(lblTitle))
                         .addGroup(layout.createSequentialGroup()
+                            .addGap(34, 34, 34)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(layout.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addComponent(btnLoad, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                    .addGap(31, 31, 31)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(lblExamType)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(cboExamType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(lblClass, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(27, 27, 27)
-                                            .addComponent(cboClass, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGap(40, 40, 40)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(lblSubject, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
-                                        .addComponent(lblSemester, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(cboSubject, 0, 165, Short.MAX_VALUE)
-                                .addComponent(txtSemester))))
+                                    .addComponent(lblDate, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(btnLoad, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblClass, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(cboClass, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(41, 41, 41)
+                                    .addComponent(lblSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(cboSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnSave)
-                                .addGap(23, 23, 23)
-                                .addComponent(btnBack)))))
-                .addContainerGap(33, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBack)
+                                .addGap(1, 1, 1)))))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
+                .addGap(19, 19, 19)
                 .addComponent(lblTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -171,18 +161,15 @@ public class GradeEntryFrm extends javax.swing.JFrame {
                     .addComponent(cboSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblExamType)
-                    .addComponent(cboExamType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblSemester)
-                    .addComponent(txtSemester, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblDate)
+                    .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLoad))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnLoad)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSave)
-                    .addComponent(btnBack))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnBack)
+                    .addComponent(btnSave))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -191,33 +178,30 @@ public class GradeEntryFrm extends javax.swing.JFrame {
 
     private void btnLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadActionPerformed
         // TODO add your handling code here:
-        SchoolClass selectedClass= (SchoolClass) cboClass.getSelectedItem();
-        Subject selectedSubject= (Subject) cboSubject.getSelectedItem();
-        String examType= (String) cboExamType.getSelectedItem();
-        String semester= txtSemester.getText().trim();
-
-        // KIỂM TRA
+        SchoolClass selectedClass = (SchoolClass) cboClass.getSelectedItem();
+        Subject selectedSubject = (Subject) cboSubject.getSelectedItem();
+        Date date = parseDate(txtDate.getText().trim());
         if (selectedClass == null) {
-            JOptionPane.showMessageDialog(this,"Vui lòng chọn lớp!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn lớp!");
             return;
         }
         if (selectedSubject == null) {
-            JOptionPane.showMessageDialog(this,"Vui lòng chọn môn học!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn môn học!");
             return;
         }
-        if (examType == null) {
-            JOptionPane.showMessageDialog(this,"Vui lòng chọn loại điểm!");
+        if (date == null) {
+            JOptionPane.showMessageDialog(this, "Ngày không đúng định dạng dd/MM/yyyy!");
             return;
         }
-        if (semester.isEmpty()) {
-            JOptionPane.showMessageDialog(this,"Vui lòng nhập học kỳ!");
-            return;
-        }
-        // KIỂM TRA PHÂN CÔNG
+        // KIỂM TRA PHÂN CÔNG GIÁO VIÊN
         if (currentUser.getRoleId() == 2) {
             boolean allowed = false;
+            int classId = selectedClass.getId();
+            int subjectId = selectedSubject.getId();
             for (TeachingAssignment ta : teacherAssignments) {
-                if (ta.getSchoolClassId() == selectedClass.getId()&& ta.getSubjectId() == selectedSubject.getId()) {
+                int assignmentClassId = ta.getSchoolClassId();
+                int assignmentSubjectId = ta.getSubjectId();
+                if (assignmentClassId == classId&& assignmentSubjectId == subjectId) {
                     allowed = true;
                     break;
                 }
@@ -227,43 +211,27 @@ public class GradeEntryFrm extends javax.swing.JFrame {
                 return;
             }
         }
-        // XÓA BẢNG CŨ
         tableModel.setRowCount(0);
         rowToStudentId.clear();
-
-        // LẤY DANH SÁCH HỌC SINH
-        List<StudentProfile> students= studentDAO.getByClass(selectedClass.getId());
+        List<Object[]> rows = attendanceDAO.getAttendanceByClassDate(selectedClass.getId(), selectedSubject.getId(), date);
         int row = 0;
-        for (StudentProfile sp : students) {
-            // Tìm điểm đã có trong database
-            Grade existingGrade
-                    = gradeDAO.getExistingGrade(sp.getId(),selectedSubject.getId(),examType,semester);
-            double score = 0.0;
-            if (existingGrade != null) {
-                score = existingGrade.getScore();
-            }
-            // Hiển thị điểm cũ nếu đã có
-            tableModel.addRow(
-                    new Object[]{sp.getStudentCode(),sp.getFullName(),score});
-            rowToStudentId.put(row,sp.getId());
+        for (Object[] r : rows) {
+            tableModel.addRow(new Object[]{r[1], r[2], r[3], r[4] == null ? "" : r[4]});
+            rowToStudentId.put(row, (Integer) r[0]);
             row++;
         }
-        if (students.isEmpty()) {
-            JOptionPane.showMessageDialog(this,"Lớp này chưa có học sinh!");
+        if (rows.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không có học sinh trong lớp này!");
         }
     }//GEN-LAST:event_btnLoadActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
-        Subject subject = (Subject) cboSubject.getSelectedItem();
-        String examType = (String) cboExamType.getSelectedItem();
-        String semester = txtSemester.getText().trim();
-        if (semester.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập học kỳ!");
-            return;
-        }
-        if (subject == null || tableModel.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn môn học và tải danh sách học sinh trước!");
+        Subject selectedSubject = (Subject) cboSubject.getSelectedItem();
+        Date date = parseDate(txtDate.getText().trim());
+
+        if (selectedSubject == null || date == null || tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng tải danh sách trước khi lưu!");
             return;
         }
 
@@ -273,20 +241,15 @@ public class GradeEntryFrm extends javax.swing.JFrame {
             if (studentId == null) {
                 continue;
             }
-            double score = ((Number) tableModel.getValueAt(row, 2)).doubleValue();
+            String status = (String) tableModel.getValueAt(row, 2);
+            String note = (String) tableModel.getValueAt(row, 3);
 
-            Grade g = new Grade();
-            g.setStudentProfileId(studentId);
-            g.setSubjectId(subject.getId());
-            g.setExamType(examType);
-            g.setScore(score);
-            g.setSemester(semester);
-
-            if (gradeDAO.saveOrUpdate(g)) {
+            boolean ok = attendanceDAO.saveAttendance(studentId, selectedSubject.getId(), date, status, note, null);
+            if (ok) {
                 successCount++;
             }
         }
-        JOptionPane.showMessageDialog(this, "Đã lưu điểm cho " + successCount + " học sinh!");
+        JOptionPane.showMessageDialog(this, "Đã lưu điểm danh cho " + successCount + " học sinh!");
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
@@ -295,24 +258,19 @@ public class GradeEntryFrm extends javax.swing.JFrame {
         new MainMenuFrm(currentUser).setVisible(true);
     }//GEN-LAST:event_btnBackActionPerformed
     private void customizeUI() {
-        tableModel = new DefaultTableModel(new Object[]{"Mã HS", "Họ tên", "Điểm"}, 0) {
+        tableModel = new DefaultTableModel(new Object[]{"Mã HS", "Họ tên", "Trạng thái", "Ghi chú"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 2;
-            }
-
-            @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                return columnIndex == 2 ? Double.class : String.class;
+                return column == 2 || column == 3; // chỉ Trạng thái và Ghi chú cho sửa
             }
         };
-        tblGrades.setModel(tableModel);   // gọi setModel() LẦN 2 ở đây, ghi đè lên model tạm trong initComponents()
+        tblAttendance.setModel(tableModel);
 
-        cboExamType.removeAllItems();
-        cboExamType.addItem("Miệng");
-        cboExamType.addItem("15 phút");
-        cboExamType.addItem("Giữa kỳ");
-        cboExamType.addItem("Cuối kỳ");
+        // Cột "Trạng thái" (index 2) hiển thị ComboBox ngay trong ô khi double-click
+        JComboBox<String> statusCombo = new JComboBox<>(STATUS_OPTIONS);
+        tblAttendance.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(statusCombo));
+
+        txtDate.setText(sdf.format(new java.util.Date())); // mặc định ngày hôm nay
     }
 
     private void loadCombos() {
@@ -332,7 +290,7 @@ public class GradeEntryFrm extends javax.swing.JFrame {
         // GIÁO VIÊN
         if (currentUser.getRoleId() == 2) {
             teacherAssignments = teachingAssignmentDAO.getByTeacherUserId(currentUser.getId());
-            // Chỉ lấy lớp giáo viên được phân công
+            // Chỉ load các lớp giáo viên được phân công
             for (TeachingAssignment ta : teacherAssignments) {
                 if (!containsClass(ta.getSchoolClassId())) {
                     SchoolClass schoolClass = new SchoolClass();
@@ -341,9 +299,9 @@ public class GradeEntryFrm extends javax.swing.JFrame {
                     cboClass.addItem(schoolClass);
                 }
             }
-            // Khi đổi lớp thì đổi danh sách môn
+            // Khi chọn lớp thì lọc môn
             cboClass.addActionListener(e -> loadSubjectsBySelectedClass());
-            // Load môn cho lớp đầu tiên
+            // Load môn của lớp đầu tiên
             if (cboClass.getItemCount() > 0) {
                 cboClass.setSelectedIndex(0);
                 loadSubjectsBySelectedClass();
@@ -352,34 +310,17 @@ public class GradeEntryFrm extends javax.swing.JFrame {
     }
 
     private void loadSubjectsBySelectedClass() {
-
         cboSubject.removeAllItems();
-
-        SchoolClass selectedClass
-                = (SchoolClass) cboClass.getSelectedItem();
-
+        SchoolClass selectedClass = (SchoolClass) cboClass.getSelectedItem();
         if (selectedClass == null || teacherAssignments == null) {
             return;
         }
-
         for (TeachingAssignment ta : teacherAssignments) {
-
             if (ta.getSchoolClassId() == selectedClass.getId()) {
-
                 Subject subject = new Subject();
-
-                subject.setId(
-                        ta.getSubjectId()
-                );
-
-                subject.setSubjectName(
-                        ta.getSubjectName()
-                );
-
-                subject.setSubjectCode(
-                        ta.getSubjectCode()
-                );
-
+                subject.setId(ta.getSubjectId());
+                subject.setSubjectName(ta.getSubjectName());
+                subject.setSubjectCode(ta.getSubjectCode());
                 cboSubject.addItem(subject);
             }
         }
@@ -393,6 +334,24 @@ public class GradeEntryFrm extends javax.swing.JFrame {
             }
         }
         return false;
+    }
+
+    private boolean containsSubject(int subjectId) {
+        for (int i = 0; i < cboSubject.getItemCount(); i++) {
+            Subject s = cboSubject.getItemAt(i);
+            if (s.getId() == subjectId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Date parseDate(String text) {
+        try {
+            return new Date(sdf.parse(text).getTime());
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     /**
@@ -417,13 +376,6 @@ public class GradeEntryFrm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            model.User demoUser = new model.User();
-            demoUser.setFullName("Quản trị viên");
-            demoUser.setRoleId(1);
-
-            new GradeEntryFrm(demoUser).setVisible(true);
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -431,15 +383,13 @@ public class GradeEntryFrm extends javax.swing.JFrame {
     private javax.swing.JButton btnLoad;
     private javax.swing.JButton btnSave;
     private javax.swing.JComboBox<SchoolClass> cboClass;
-    private javax.swing.JComboBox<String> cboExamType;
     private javax.swing.JComboBox<Subject> cboSubject;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblClass;
-    private javax.swing.JLabel lblExamType;
-    private javax.swing.JLabel lblSemester;
+    private javax.swing.JLabel lblDate;
     private javax.swing.JLabel lblSubject;
     private javax.swing.JLabel lblTitle;
-    private javax.swing.JTable tblGrades;
-    private javax.swing.JTextField txtSemester;
+    private javax.swing.JTable tblAttendance;
+    private javax.swing.JTextField txtDate;
     // End of variables declaration//GEN-END:variables
 }

@@ -671,3 +671,259 @@ SELECT * FROM Grades;
 SELECT * FROM Schedules;
 SELECT * FROM Notifications;
 SELECT * FROM Tuitions;
+
+ALTER TABLE Tuitions
+ADD PaymentMethod NVARCHAR(50) NULL;
+
+SELECT *
+FROM Tuitions;
+
+ALTER TABLE Tuitions
+ADD TuitionType NVARCHAR(100) NULL;
+
+USE DB_SchoolManagementSystem;
+GO
+
+-- Bảo hiểm
+IF NOT EXISTS (
+    SELECT 1
+    FROM Tuitions t
+    JOIN StudentProfiles sp ON t.StudentProfileId = sp.Id
+    WHERE sp.StudentCode = 'HS0001'
+      AND t.TuitionType = N'Bảo hiểm'
+      AND t.Semester = N'Cả năm'
+)
+BEGIN
+    INSERT INTO Tuitions
+    (
+        StudentProfileId,
+        Semester,
+        Amount,
+        DueDate,
+        PaidDate,
+        Status,
+        PaymentMethod,
+        TuitionType
+    )
+    SELECT
+        sp.Id,
+        N'Cả năm',
+        500000,
+        '2025-09-30',
+        NULL,
+        'Unpaid',
+        NULL,
+        N'Bảo hiểm'
+    FROM StudentProfiles sp
+    WHERE sp.StudentCode = 'HS0001';
+END;
+
+
+-- Tiền ăn
+IF NOT EXISTS (
+    SELECT 1
+    FROM Tuitions t
+    JOIN StudentProfiles sp ON t.StudentProfileId = sp.Id
+    WHERE sp.StudentCode = 'HS0001'
+      AND t.TuitionType = N'Tiền ăn'
+      AND t.Semester = N'HK1'
+)
+BEGIN
+    INSERT INTO Tuitions
+    (
+        StudentProfileId,
+        Semester,
+        Amount,
+        DueDate,
+        PaidDate,
+        Status,
+        PaymentMethod,
+        TuitionType
+    )
+    SELECT
+        sp.Id,
+        N'HK1',
+        2000000,
+        '2025-09-30',
+        NULL,
+        'Unpaid',
+        NULL,
+        N'Tiền ăn'
+    FROM StudentProfiles sp
+    WHERE sp.StudentCode = 'HS0001';
+END;
+
+
+-- Nội trú
+IF NOT EXISTS (
+    SELECT 1
+    FROM Tuitions t
+    JOIN StudentProfiles sp ON t.StudentProfileId = sp.Id
+    WHERE sp.StudentCode = 'HS0001'
+      AND t.TuitionType = N'Nội trú'
+      AND t.Semester = N'HK1'
+)
+BEGIN
+    INSERT INTO Tuitions
+    (
+        StudentProfileId,
+        Semester,
+        Amount,
+        DueDate,
+        PaidDate,
+        Status,
+        PaymentMethod,
+        TuitionType
+    )
+    SELECT
+        sp.Id,
+        N'HK1',
+        3000000,
+        '2025-09-30',
+        NULL,
+        'Unpaid',
+        NULL,
+        N'Nội trú'
+    FROM StudentProfiles sp
+    WHERE sp.StudentCode = 'HS0001';
+END;
+
+
+-- Ngoại khóa
+IF NOT EXISTS (
+    SELECT 1
+    FROM Tuitions t
+    JOIN StudentProfiles sp ON t.StudentProfileId = sp.Id
+    WHERE sp.StudentCode = 'HS0001'
+      AND t.TuitionType = N'Ngoại khóa'
+      AND t.Semester = N'HK1'
+)
+BEGIN
+    INSERT INTO Tuitions
+    (
+        StudentProfileId,
+        Semester,
+        Amount,
+        DueDate,
+        PaidDate,
+        Status,
+        PaymentMethod,
+        TuitionType
+    )
+    SELECT
+        sp.Id,
+        N'HK1',
+        300000,
+        '2025-10-15',
+        NULL,
+        'Unpaid',
+        NULL,
+        N'Ngoại khóa'
+    FROM StudentProfiles sp
+    WHERE sp.StudentCode = 'HS0001';
+END;
+
+
+-- Tài liệu học tập
+IF NOT EXISTS (
+    SELECT 1
+    FROM Tuitions t
+    JOIN StudentProfiles sp ON t.StudentProfileId = sp.Id
+    WHERE sp.StudentCode = 'HS0001'
+      AND t.TuitionType = N'Tài liệu học tập'
+      AND t.Semester = N'Cả năm'
+)
+BEGIN
+    INSERT INTO Tuitions
+    (
+        StudentProfileId,
+        Semester,
+        Amount,
+        DueDate,
+        PaidDate,
+        Status,
+        PaymentMethod,
+        TuitionType
+    )
+    SELECT
+        sp.Id,
+        N'Cả năm',
+        250000,
+        '2025-09-30',
+        NULL,
+        'Unpaid',
+        NULL,
+        N'Tài liệu học tập'
+    FROM StudentProfiles sp
+    WHERE sp.StudentCode = 'HS0001';
+END;
+
+
+-- Xe đưa đón
+IF NOT EXISTS (
+    SELECT 1
+    FROM Tuitions t
+    JOIN StudentProfiles sp ON t.StudentProfileId = sp.Id
+    WHERE sp.StudentCode = 'HS0001'
+      AND t.TuitionType = N'Xe đưa đón'
+      AND t.Semester = N'HK1'
+)
+BEGIN
+    INSERT INTO Tuitions
+    (
+        StudentProfileId,
+        Semester,
+        Amount,
+        DueDate,
+        PaidDate,
+        Status,
+        PaymentMethod,
+        TuitionType
+    )
+    SELECT
+        sp.Id,
+        N'HK1',
+        1500000,
+        '2025-09-30',
+        NULL,
+        'Unpaid',
+        NULL,
+        N'Xe đưa đón'
+    FROM StudentProfiles sp
+    WHERE sp.StudentCode = 'HS0001';
+END;
+
+
+-- Cơ sở vật chất
+IF NOT EXISTS (
+    SELECT 1
+    FROM Tuitions t
+    JOIN StudentProfiles sp ON t.StudentProfileId = sp.Id
+    WHERE sp.StudentCode = 'HS0001'
+      AND t.TuitionType = N'Cơ sở vật chất'
+      AND t.Semester = N'Cả năm'
+)
+BEGIN
+    INSERT INTO Tuitions
+    (
+        StudentProfileId,
+        Semester,
+        Amount,
+        DueDate,
+        PaidDate,
+        Status,
+        PaymentMethod,
+        TuitionType
+    )
+    SELECT
+        sp.Id,
+        N'Cả năm',
+        400000,
+        '2025-09-30',
+        NULL,
+        'Unpaid',
+        NULL,
+        N'Cơ sở vật chất'
+    FROM StudentProfiles sp
+    WHERE sp.StudentCode = 'HS0001';
+END;
