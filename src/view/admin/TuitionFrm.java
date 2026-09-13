@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package view;
+package view.admin;
 
+import view.common.MainMenuFrm;
 import dao.StudentDAO;
 import dao.TuitionDAO;
 import model.StudentProfile;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import util.Session;
 
 /**
  *
@@ -34,6 +36,7 @@ public class TuitionFrm extends javax.swing.JFrame {
      */
     public TuitionFrm() {
         initComponents();
+        setLocationRelativeTo(null);
         customizeUI();
         loadStudentCombo();
         loadTable();
@@ -63,6 +66,9 @@ public class TuitionFrm extends javax.swing.JFrame {
         btnMarkPaid = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        cboTuitionType = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -105,43 +111,57 @@ public class TuitionFrm extends javax.swing.JFrame {
         btnClear.setText("Làm mới");
         btnClear.addActionListener(this::btnClearActionPerformed);
 
+        btnBack.setText("Quay lại");
+        btnBack.addActionListener(this::btnBackActionPerformed);
+
+        jLabel1.setText("Khoản thu:");
+
+        cboTuitionType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(236, 236, 236))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(212, 212, 212))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 659, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(lblAmount, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(lblStudent, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(txtAmount)
-                                        .addGap(31, 31, 31))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(txtAmount)
+                                                .addGap(31, 31, 31))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(cboStudent, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(lblSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(63, 63, 63)
+                                                .addComponent(txtSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(lblDueDate)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(txtDueDate))))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(cboStudent, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(63, 63, 63)
-                                        .addComponent(txtSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblDueDate)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(txtDueDate))))))
+                                        .addComponent(cboTuitionType, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE))))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(139, 139, 139)
+                        .addGap(135, 135, 135)
                         .addComponent(btnAdd)
                         .addGap(12, 12, 12)
                         .addComponent(btnMarkPaid)
@@ -155,7 +175,9 @@ public class TuitionFrm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addComponent(lblTitle)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblTitle)
+                    .addComponent(btnBack))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -170,33 +192,53 @@ public class TuitionFrm extends javax.swing.JFrame {
                     .addComponent(txtAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblDueDate)
                     .addComponent(txtDueDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(cboTuitionType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd)
                     .addComponent(btnMarkPaid)
                     .addComponent(btnDelete)
                     .addComponent(btnClear))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
     private void customizeUI() {
         tableModel = new DefaultTableModel(new Object[]{
-            "ID", "Mã HS", "Họ tên", "Học kỳ", "Số tiền", "Hạn đóng", "Ngày đã đóng", "Trạng thái"}, 0) {
+            "ID", "Mã HS", "Họ tên", "Khoản thu", "Học kỳ",
+            "Số tiền", "Hạn đóng", "Ngày đã đóng",
+            "Trạng thái", "Phương thức"
+        }, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
+
         tblTuitions.setModel(tableModel);
         tblTuitions.getSelectionModel().addListSelectionListener(e -> onRowSelected());
+
+        // Các loại khoản thu
+        cboTuitionType.removeAllItems();
+        cboTuitionType.addItem("Học phí");
+        cboTuitionType.addItem("Bảo hiểm");
+        cboTuitionType.addItem("Tiền ăn");
+        cboTuitionType.addItem("Nội trú");
+        cboTuitionType.addItem("Ngoại khóa");
+        cboTuitionType.addItem("Tài liệu học tập");
+        cboTuitionType.addItem("Xe đưa đón");
+        cboTuitionType.addItem("Cơ sở vật chất");
     }
 
     private void loadStudentCombo() {
         cboStudent.removeAllItems();
+
         for (StudentProfile sp : studentDAO.getAll()) {
-            ((JComboBox) cboStudent).addItem(sp);   // raw type, bỏ qua kiểm tra generic <String>
+            ((JComboBox) cboStudent).addItem(sp);
         }
     }
 
@@ -204,24 +246,72 @@ public class TuitionFrm extends javax.swing.JFrame {
     // (fullName + " - " + studentCode hoặc tương tự) nên không cần custom renderer riêng.
     private void loadTable() {
         tableModel.setRowCount(0);
+
         for (Object[] row : tuitionDAO.getAll()) {
-            // row = {Id, StudentCode, FullName, Semester, Amount, DueDate, PaidDate, Status}
-            String dueDate = row[5] != null ? sdf.format((Date) row[5]) : "";
-            String paidDate = row[6] != null ? sdf.format((Date) row[6]) : "";
-            tableModel.addRow(new Object[]{row[0], row[1], row[2], row[3], row[4], dueDate, paidDate, row[7]});
+
+            // row:
+            // 0 = Id
+            // 1 = StudentCode
+            // 2 = FullName
+            // 3 = TuitionType
+            // 4 = Semester
+            // 5 = Amount
+            // 6 = DueDate
+            // 7 = PaidDate
+            // 8 = Status
+            // 9 = PaymentMethod
+            String dueDate = row[6] != null
+                    ? sdf.format((Date) row[6])
+                    : "";
+
+            String paidDate = row[7] != null
+                    ? sdf.format((Date) row[7])
+                    : "";
+
+            tableModel.addRow(new Object[]{
+                row[0],
+                row[1],
+                row[2],
+                row[3],
+                row[4],
+                row[5],
+                dueDate,
+                paidDate,
+                row[8],
+                row[9]
+            });
         }
     }
 
     private void onRowSelected() {
         int row = tblTuitions.getSelectedRow();
+
         if (row < 0) {
             return;
         }
+
         selectedId = (int) tableModel.getValueAt(row, 0);
-        txtSemester.setText((String) tableModel.getValueAt(row, 3));
-        txtAmount.setText(String.valueOf(tableModel.getValueAt(row, 4)));
-        txtDueDate.setText((String) tableModel.getValueAt(row, 5));
+
+        // Khoản thu
+        String tuitionType = String.valueOf(tableModel.getValueAt(row, 3));
+        cboTuitionType.setSelectedItem(tuitionType);
+
+        // Học kỳ
+        txtSemester.setText(
+                String.valueOf(tableModel.getValueAt(row, 4))
+        );
+
+        // Số tiền
+        txtAmount.setText(
+                String.valueOf(tableModel.getValueAt(row, 5))
+        );
+
+        // Hạn đóng
+        txtDueDate.setText(
+                String.valueOf(tableModel.getValueAt(row, 6))
+        );
     }
+
     private void btnMarkPaidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMarkPaidActionPerformed
         // TODO add your handling code here:
         if (selectedId < 0) {
@@ -236,23 +326,61 @@ public class TuitionFrm extends javax.swing.JFrame {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
         StudentProfile sp = (StudentProfile) cboStudent.getSelectedItem();
+
         if (sp == null) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn học sinh!");
             return;
         }
+
         try {
-            BigDecimal amount = new BigDecimal(txtAmount.getText().trim());
-            Date dueDate = new Date(sdf.parse(txtDueDate.getText().trim()).getTime());
-            boolean ok = tuitionDAO.insert(sp.getId(), txtSemester.getText().trim(), amount, dueDate);
+            String tuitionType = String.valueOf(
+                    cboTuitionType.getSelectedItem()
+            );
+
+            String semester = txtSemester.getText().trim();
+
+            if (semester.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập học kỳ!");
+                return;
+            }
+
+            BigDecimal amount = new BigDecimal(
+                    txtAmount.getText().trim()
+            );
+
+            Date dueDate = new Date(
+                    sdf.parse(txtDueDate.getText().trim()).getTime()
+            );
+
+            boolean ok = tuitionDAO.insert(
+                    sp.getId(),
+                    tuitionType,
+                    semester,
+                    amount,
+                    dueDate
+            );
+
             if (ok) {
-                JOptionPane.showMessageDialog(this, "Thêm khoản học phí thành công!");
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Thêm khoản học phí thành công!"
+                );
+
                 loadTable();
                 btnClearActionPerformed(null);
             }
+
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Số tiền không hợp lệ!");
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Số tiền không hợp lệ!"
+            );
+
         } catch (ParseException ex) {
-            JOptionPane.showMessageDialog(this, "Ngày hạn đóng không đúng định dạng dd/MM/yyyy!");
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ngày hạn đóng không đúng định dạng dd/MM/yyyy!"
+            );
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
@@ -273,10 +401,24 @@ public class TuitionFrm extends javax.swing.JFrame {
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         // TODO add your handling code here:
         selectedId = -1;
+
+        txtSemester.setText("");
         txtAmount.setText("");
         txtDueDate.setText("");
+
+        if (cboTuitionType.getItemCount() > 0) {
+            cboTuitionType.setSelectedIndex(0);
+        }
+
         tblTuitions.clearSelection();
     }//GEN-LAST:event_btnClearActionPerformed
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        // TODO add your handling code here:
+        MainMenuFrm mainMenu = new MainMenuFrm(Session.getCurrentUser());
+        mainMenu.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnBackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -305,10 +447,13 @@ public class TuitionFrm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnMarkPaid;
     private javax.swing.JComboBox<String> cboStudent;
+    private javax.swing.JComboBox<String> cboTuitionType;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblAmount;
     private javax.swing.JLabel lblDueDate;

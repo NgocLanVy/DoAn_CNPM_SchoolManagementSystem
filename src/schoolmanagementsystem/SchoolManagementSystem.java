@@ -5,7 +5,7 @@
 package schoolmanagementsystem;
 
 import javax.swing.SwingUtilities;
-import view.LoginFrm;
+import view.auth.LoginFrm;
 
 /**
  *

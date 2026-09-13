@@ -2,11 +2,28 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package view;
+package view.common;
 
+import view.auth.LoginFrm;
 import javax.swing.JOptionPane;
 import model.User;
 import util.Session;
+import view.admin.AttendanceFrm;
+import view.admin.ClassManagementFrm;
+import view.admin.GradeEntryFrm;
+import view.teacher.MyClassFrm;
+import view.admin.NotificationFrm;
+import view.parent.ParentAttendanceFrm;
+import view.parent.ParentGradeFrm;
+import view.parent.ParentTuitionFrm;
+import view.admin.StudentManagementFrm;
+import view.admin.SubjectManagementFrm;
+import view.admin.TeacherManagementFrm;
+import view.admin.TeachingAssignmentFrm;
+import view.admin.TuitionFrm;
+import view.student.ViewAttendanceFrm;
+import view.student.ViewGradeFrm;
+import view.student.ViewNotificationFrm;
 
 /**
  *
@@ -186,9 +203,13 @@ public class MainMenuFrm extends javax.swing.JFrame {
 
             int roleId = currentUser.getRoleId();
 
-            if (roleId == 1 || roleId == 2) {
+            if (roleId == 1) {
                 this.dispose();
                 new ClassManagementFrm(currentUser).setVisible(true);
+
+            } else if (roleId == 2) {
+                this.dispose();
+                new MyClassFrm(currentUser).setVisible(true);
             }
         });
 
@@ -222,14 +243,15 @@ public class MainMenuFrm extends javax.swing.JFrame {
                 this.dispose();
                 new GradeEntryFrm(currentUser).setVisible(true);
 
-            } else if (roleId == 3 || roleId == 4) {
+            } else if (roleId == 3) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Chức năng xem điểm đang được xây dựng.",
-                        "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                this.dispose();
+                new ViewGradeFrm(currentUser).setVisible(true);
+
+            } else if (roleId == 4) {
+
+                this.dispose();
+                new ParentGradeFrm(currentUser).setVisible(true);
             }
         });
 
@@ -243,21 +265,13 @@ public class MainMenuFrm extends javax.swing.JFrame {
                 new AttendanceFrm(currentUser).setVisible(true);
             } else if (roleId == 3) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Chức năng xem điểm danh đang được xây dựng.",
-                        "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                this.dispose();
+                new ViewAttendanceFrm(currentUser).setVisible(true);
 
             } else if (roleId == 4) {
 
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Chức năng xem điểm danh của con đang được xây dựng.",
-                        "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                this.dispose();
+                new ParentAttendanceFrm(currentUser).setVisible(true);
             }
         });
 
@@ -272,21 +286,20 @@ public class MainMenuFrm extends javax.swing.JFrame {
                 new TuitionFrm().setVisible(true);
 
             } else if (roleId == 4) {
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Chức năng xem học phí của con đang được xây dựng.",
-                        "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                this.dispose();
+                new ParentTuitionFrm(currentUser).setVisible(true);
             }
         });
 
         //THÔNG BÁO
         btnNotification.addActionListener(e -> {
-
             this.dispose();
-            new NotificationFrm(currentUser).setVisible(true);
+            int roleId = currentUser.getRoleId();
+            if (roleId == 1 || roleId == 2) {
+                new NotificationFrm(currentUser).setVisible(true);      // Admin/Teacher: soạn + gửi
+            } else {
+                new ViewNotificationFrm(currentUser).setVisible(true);  // Student/Parent: chỉ xem
+            }
         });
 
         //HỒ SƠ
@@ -299,14 +312,13 @@ public class MainMenuFrm extends javax.swing.JFrame {
         // TODO add your handling code here:
         util.Session.clear();
         this.dispose();
-        new view.LoginFrm().setVisible(true);
+        new view.auth.LoginFrm().setVisible(true);
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnTeachingAssignmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTeachingAssignmentActionPerformed
         // TODO add your handling code here:
-        if (currentUser.getRoleId() == 1
-                || currentUser.getRoleId() == 2) {
-
+        if (currentUser.getRoleId() == 1|| currentUser.getRoleId() == 2) {
+            this.dispose();
             new TeachingAssignmentFrm(currentUser).setVisible(true);
         }
     }//GEN-LAST:event_btnTeachingAssignmentActionPerformed

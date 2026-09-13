@@ -21,23 +21,37 @@ public class TuitionDAO {
 
     public List<Object[]> getByStudent(int studentProfileId) {
         List<Object[]> list = new ArrayList<>();
-        String sql = "SELECT t.Id, t.Semester, t.Amount, t.DueDate, t.PaidDate, t.Status "
-                + "FROM Tuitions t "
-                + "WHERE t.StudentProfileId = ? "
-                + "ORDER BY t.DueDate DESC";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+        String sql = "SELECT Id, TuitionType, Semester, Amount, DueDate, PaidDate, Status, PaymentMethod "
+                + "FROM Tuitions "
+                + "WHERE StudentProfileId = ? "
+                + "ORDER BY Id DESC";
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, studentProfileId);
+
             try (ResultSet rs = ps.executeQuery()) {
+
                 while (rs.next()) {
+
                     list.add(new Object[]{
-                        rs.getInt("Id"), rs.getString("Semester"), rs.getBigDecimal("Amount"),
-                        rs.getDate("DueDate"), rs.getDate("PaidDate"), rs.getString("Status")
+                        rs.getInt("Id"),
+                        rs.getString("TuitionType"),
+                        rs.getString("Semester"),
+                        rs.getBigDecimal("Amount"),
+                        rs.getDate("DueDate"),
+                        rs.getDate("PaidDate"),
+                        rs.getString("Status"),
+                        rs.getString("PaymentMethod")
                     });
                 }
             }
+
         } catch (SQLException e) {
             System.out.println("Lỗi getByStudent Tuition: " + e.getMessage());
         }
+
         return list;
     }
 
@@ -62,31 +76,46 @@ public class TuitionDAO {
         return list;
     }
 
-    public boolean insert(int studentProfileId, String semester, BigDecimal amount, Date dueDate) {
-        String sql = "INSERT INTO Tuitions (StudentProfileId, Semester, Amount, DueDate, Status) VALUES (?,?,?,?,'Unpaid')";
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+    public boolean insert(int studentProfileId,String tuitionType,String semester,BigDecimal amount,Date dueDate) {
+        String sql = "INSERT INTO Tuitions "
+                + "(StudentProfileId, TuitionType, Semester, Amount, DueDate, Status) "
+                + "VALUES (?, ?, ?, ?, ?, 'Unpaid')";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, studentProfileId);
-            ps.setString(2, semester);
-            ps.setBigDecimal(3, amount);
-            ps.setDate(4, dueDate);
+            ps.setString(2, tuitionType);
+            ps.setString(3, semester);
+            ps.setBigDecimal(4, amount);
+            ps.setDate(5, dueDate);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("Lỗi insert Tuition: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
 
-    // Đánh dấu đã đóng học phí
-    public boolean markAsPaid(int id) {
-        String sql = "UPDATE Tuitions SET Status='Paid', PaidDate=? WHERE Id=?";
+    // Đánh dấu đã đóng học phí + lưu phương thức thanh toán
+    public boolean markAsPaid(int id, String paymentMethod) {
+        String sql = "UPDATE Tuitions "
+                + "SET Status='Paid', PaidDate=?, PaymentMethod=? "
+                + "WHERE Id=?";
+
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setDate(1, new java.sql.Date(System.currentTimeMillis()));
-            ps.setInt(2, id);
+            ps.setString(2, paymentMethod);
+            ps.setInt(3, id);
+
             return ps.executeUpdate() > 0;
+
         } catch (SQLException e) {
             System.out.println("Lỗi markAsPaid Tuition: " + e.getMessage());
             return false;
         }
+    }
+
+    // Dùng cho màn hình quản lý học phí của Admin
+    public boolean markAsPaid(int id) {
+        return markAsPaid(id, "Admin xác nhận");
     }
 
     public boolean delete(int id) {
