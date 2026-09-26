@@ -40,6 +40,7 @@ public class TuitionFrm extends javax.swing.JFrame {
         customizeUI();
         loadStudentCombo();
         loadTable();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

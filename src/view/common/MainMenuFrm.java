@@ -45,6 +45,7 @@ public class MainMenuFrm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         customizeUI();
         registerEvents();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

@@ -55,6 +55,7 @@ public class TeachingAssignmentFrm extends javax.swing.JFrame {
         loadSubjectCombo();
         loadTeacherCombo();
         loadTable();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

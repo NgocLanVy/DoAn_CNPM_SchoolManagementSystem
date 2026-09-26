@@ -43,6 +43,7 @@ public class MyClassFrm extends javax.swing.JFrame {
             loadClasses();
             registerEvents();
         }
+        util.UITheme.apply(getContentPane());
     }
 
     /**

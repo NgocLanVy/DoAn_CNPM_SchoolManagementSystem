@@ -40,6 +40,7 @@ public class ClassManagementFrm extends javax.swing.JFrame {
         customizeUI();
         loadTeacherCombo();
         loadTable();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

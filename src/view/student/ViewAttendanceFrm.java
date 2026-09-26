@@ -40,6 +40,7 @@ public class ViewAttendanceFrm extends javax.swing.JFrame {
 
         customizeUI();
         loadAttendance();
+        util.UITheme.apply(getContentPane());
     }
 
     private void customizeUI() {
