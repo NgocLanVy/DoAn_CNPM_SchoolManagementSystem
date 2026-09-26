@@ -32,6 +32,7 @@ public class SubjectManagementFrm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         customizeUI();
         loadTable();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

@@ -39,6 +39,7 @@ public class ViewGradeFrm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         customizeUI();
         loadGrades();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

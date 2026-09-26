@@ -47,6 +47,7 @@ public class ParentAttendanceFrm extends javax.swing.JFrame {
         customizeUI();
         loadChildren();
         registerEvents();
+        util.UITheme.apply(getContentPane());
     }
 
     private void customizeUI() {

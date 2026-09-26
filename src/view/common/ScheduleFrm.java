@@ -59,6 +59,7 @@ public class ScheduleFrm extends javax.swing.JFrame {
         loadTable();
         registerEvents();
         setupRole();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

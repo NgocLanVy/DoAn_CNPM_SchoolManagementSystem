@@ -45,6 +45,7 @@ public class TeacherManagementFrm extends javax.swing.JFrame {
         customizeUI();
         registerEvents();
         loadTable();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

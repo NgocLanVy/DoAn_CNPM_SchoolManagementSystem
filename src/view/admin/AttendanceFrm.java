@@ -53,6 +53,7 @@ public class AttendanceFrm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         customizeUI();
         loadCombos();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

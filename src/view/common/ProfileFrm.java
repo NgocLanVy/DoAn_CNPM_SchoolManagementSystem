@@ -40,6 +40,7 @@ public class ProfileFrm extends javax.swing.JFrame {
         txtRole.setEditable(false);
         // Đổ dữ liệu User lên form
         loadUserInfo();
+        util.UITheme.apply(getContentPane());
     }
 
     /**

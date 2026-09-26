@@ -46,6 +46,7 @@ public class StudentManagementFrm extends javax.swing.JFrame {
         customizeUI();
         loadClassCombo();
         loadTable(studentDAO.getAll());
+        util.UITheme.apply(getContentPane());
     }
 
     /**

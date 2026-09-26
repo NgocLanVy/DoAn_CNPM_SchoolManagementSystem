@@ -43,6 +43,7 @@ public class NotificationFrm extends javax.swing.JFrame {
         customizeUI();
         loadReceiverCombo();
         loadTable();
+        util.UITheme.apply(getContentPane());
     }
 
     /**
